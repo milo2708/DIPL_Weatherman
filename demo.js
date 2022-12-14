@@ -67,19 +67,25 @@ function updateScroll() {
 
 function MessageToData(textdata){
 let timePattern = /Time online: [0-9.]+/ig;
-let HTUPattern = /Humid [0-9.]+/ig;
+let HTUPattern = /Humid  [0-9.]+/ig;
 let MBEPattern = /Press [0-9.]+/ig;
-let TMPPattern = /TempC [0-9.]+/ig;
+let TMPPattern = /TempC  [0-9.]+/ig;
 
 let MBEData = textdata.match(MBEPattern);
 let TMPData = textdata.match(TMPPattern);
 let timeData = textdata.match(timePattern);
 let HTUData = textdata.match(HTUPattern);
 
+let MBEDatafin = MBEData[0].match(/[0-9.]+/);
+let TMPDatafin = TMPData[2].match(/[0-9.]+/);
+let timeDatafin = timeData[0].match(/[0-9.]+/);
+let HTUDatafin = HTUData[0].match(/[0-9.]+/);
 
-document.getElementById("TemperaturID").innerHTML = TMPData + "°C";
-document.getElementById("LuftfeuchtigkeitID").innerHTML = HTUData + "%";
-document.getElementById("LuftdruckID").innerHTML = MBEData[0] + "mbar";
-document.getElementById("OnlineZeit").innerHTML = timeData + "s";
+
+
+document.getElementById("TemperaturID").innerHTML = TMPDatafin[0] + "°C";
+document.getElementById("LuftfeuchtigkeitID").innerHTML = HTUDatafin[0] + "%";
+document.getElementById("LuftdruckID").innerHTML = MBEDatafin[0] + "mbar";
+document.getElementById("OnlineZeit").innerHTML = timeDatafin + "s";
 }
 //Topic: DAFern/Weatherman | Time online: 626 HTU21D: tempC 23.08 humid 42.11 MBE280: tempC 23.73 tempF 74.71 humid 45.34 Press 957.41 Altm 538.55 Altf 1553.63 TMP117: tempC 23.51 tempF 74.31
