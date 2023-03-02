@@ -65,27 +65,66 @@ function updateScroll() {
     element.scrollTop = element.scrollHeight;
 }
 
+// Receives Message and edits the string to fit the visualization
 function MessageToData(textdata){
+
+// RegExp Pattern to filter the string
 let timePattern = /Time online: [0-9.]+/ig;
 let HTUPattern = /Humid  [0-9.]+/ig;
 let MBEPattern = /Press [0-9.]+/ig;
 let TMPPattern = /TempC  [0-9.]+/ig;
 
+// Filter out the spezific sensor data
 let MBEData = textdata.match(MBEPattern);
 let TMPData = textdata.match(TMPPattern);
 let timeData = textdata.match(timePattern);
 let HTUData = textdata.match(HTUPattern);
 
+// Correct the formatting
 let MBEDatafin = MBEData[0].match(/[0-9.]+/);
 let TMPDatafin = TMPData[2].match(/[0-9.]+/);
 let timeDatafin = timeData[0].match(/[0-9.]+/);
 let HTUDatafin = HTUData[0].match(/[0-9.]+/);
 
 
-
+// Replace old data with new data
 document.getElementById("TemperaturID").innerHTML = TMPDatafin[0] + "°C";
 document.getElementById("LuftfeuchtigkeitID").innerHTML = HTUDatafin[0] + "%";
 document.getElementById("LuftdruckID").innerHTML = MBEDatafin[0] + "mbar";
 document.getElementById("OnlineZeit").innerHTML = timeDatafin + "s";
 }
-//Topic: DAFern/Weatherman | Time online: 626 HTU21D: tempC 23.08 humid 42.11 MBE280: tempC 23.73 tempF 74.71 humid 45.34 Press 957.41 Altm 538.55 Altf 1553.63 TMP117: tempC 23.51 tempF 74.31
+
+//Determines Taupunkt
+function taupunkt(t, r) {
+      
+    // Konstanten
+    var mw = 18.016; // Molekulargewicht des Wasserdampfes (kg/kmol)
+    var gk = 8314.3; // universelle Gaskonstante (J/(kmol*K))
+    var t0 = 273.15; // Absolute Temperatur von 0 °C (Kelvin)
+    var tk = t + t0; // Temperatur in Kelvin
+     
+    var a, b;
+    if (t >= 0) {
+      a = 7.5;
+      b = 237.3;
+    } else {
+      a = 7.6;
+      b = 240.7;
+    }
+     
+    // Sättigungsdampfdruck in hPa
+    var sdd = 6.1078 * Math.pow(10, (a*t)/(b+t));
+     
+    // Dampfdruck in hPa
+    var dd = sdd * (r/100);
+     
+    // Wasserdampfdichte bzw. absolute Feuchte in g/m3
+    var af = Math.pow(10,5) * mw/gk * dd/tk;
+     
+    // v-Parameter
+    var v = Math.log10(dd/6.1078);
+     
+    // Taupunkttemperatur (°C)
+    var tt = (b*v) / (a-v);
+    return { tt: tt, af: af, dd: dd };  
+  }
